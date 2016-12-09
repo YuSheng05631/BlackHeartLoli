@@ -8,6 +8,9 @@ class Display:
         self.background = pygame.image.load("Pictures/Backgound.jpg")
         self.menuButtons = [pygame.image.load("Pictures/Page_Menu_Buttons1.png"), pygame.image.load("Pictures/Page_Menu_Buttons2.png"), pygame.image.load("Pictures/Page_Menu_Buttons3.png")]
         pygame.display.set_caption("Black Heart Loli")
+        self.keepTextTitle = self.displayText("Black Heart Loli", x=100, y=100, size=100, italic=True)
+        self.keepTextGameOver = self.displayText("Game Over", x=100, y=100, size=100)
+        self.keepTextPlayerWin = [self.displayText("Player 2 Win!", x=200, y=200, size=100), self.displayText("Player 1 Win!", x=200, y=200, size=100)]
 
     def displayPageGame(self, balls, floors, players, startTime, passTime, bestTime, isOver):
         self.screen.blit(self.background, (0, 0))
@@ -17,13 +20,13 @@ class Display:
         self.displayText("Pass Time: {} Sec".format(int(passTime - startTime)), x=10, y=10, size=25)
         self.displayText("Best Time: {} Sec".format(bestTime), x=15, y=40, size=25)
         if isOver != -1:
-            self.displayText("Game Over", x=100, y=100, size=100)
-            self.displayText("Player {} Win!".format(2 - isOver), x=200, y=200, size=100)
+            self.displayKeepText(self.keepTextGameOver)
+            self.displayKeepText(self.keepTextPlayerWin[isOver])
 
     def displayPageMenu(self, mbIndex):
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.menuButtons[mbIndex], (100, 300))
-        self.displayText("Black Heart Loli", x=100, y=100, size=100, italic=True)
+        self.displayKeepText(self.keepTextTitle)
 
     def displayPageRule(self):
         self.screen.blit(self.background, (0, 0))
@@ -38,3 +41,7 @@ class Display:
         textRect.x = x
         textRect.y = y
         self.screen.blit(textSurf, textRect)
+        return textSurf, textRect
+
+    def displayKeepText(self, keepText:tuple):
+        self.screen.blit(keepText[0], keepText[1])

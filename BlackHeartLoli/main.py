@@ -5,6 +5,7 @@ from Page_Menu import Page_Menu
 from Page_Rule import Page_Rule
 
 pygame.init()
+pygame.mixer.init()
 
 class main:
     def __init__(self):
@@ -13,6 +14,8 @@ class main:
         self.pageMenu = Page_Menu(self.display)
         self.pageRule = Page_Rule(self.display)
         self.mbIndex = -1
+        pygame.mixer.music.load("Music/Daydream cafe (Instrumental).mp3")
+        pygame.mixer.music.play(loops=-1)
         self.start()
 
     def start(self):

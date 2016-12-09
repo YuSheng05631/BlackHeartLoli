@@ -7,12 +7,6 @@ class Page_Game:
     def __init__(self, display):
         self.display = display
         self.clock = pygame.time.Clock()
-        self.ballList = None
-        self.floorList = None
-        self.playerList = None
-        self.ballGroup = None
-        self.floorGroup = None
-        self.playerGroup = None
 
     def initObject(self):   # 物件初始化
         self.ballList = [Ball(1, 100, 200), Ball(2, 858, 200)]
