@@ -17,6 +17,7 @@ class Page_Game:
     def initObject(self):   # 物件初始化
         self.ballList = [Ball(1, 100, 200), Ball(2, 858, 200)]
         self.floorList = [Floor(106, 560), Floor(412, 560), Floor(718, 560)]
+        # self.floorList = [Floor(100, 560), Floor(300, 560), Floor(500, 560), Floor(700, 560)]
         self.playerList = [Player(2, 100, 460, True), Player(5, 824, 460, False)]
         self.ballGroup = pygame.sprite.Group()
         self.floorGroup = pygame.sprite.Group()
@@ -114,10 +115,36 @@ class Page_Game:
                         player.rect.top = floor.rect.bottom # 向上
                     elif player.rect.right > floor.rect.left and player.rect.left < floor.rect.right and player.rect.center[1] < floor.rect.top:
                         player.rect.bottom = floor.rect.top # 向下
-            return d.keys()
+            return d.keys() # stepOnFloor
 
     def collisionPlayerToPlayer(self):      # 玩家碰玩家
-        pass
+        c = pygame.sprite.collide_rect(self.playerList[0], self.playerList[1])
+        if c:
+            if self.playerList[0].rect.top < self.playerList[1].rect.bottom and self.playerList[0].rect.bottom > self.playerList[1].rect.top and self.playerList[0].rect.center[0] > self.playerList[1].rect.right:
+                # 0右1左
+                if self.playerList[0].movingLeft and self.playerList[1].movingRight:
+                    self.playerList[0].rect.x += 5
+                    self.playerList[1].rect.x -= 5
+                elif self.playerList[0].movingLeft or self.playerList[1].movingRight:
+                    self.playerList[0].rect.x += 2.5
+                    self.playerList[1].rect.x -= 2.5
+            elif self.playerList[0].rect.top < self.playerList[1].rect.bottom and self.playerList[0].rect.bottom > self.playerList[1].rect.top and self.playerList[0].rect.center[0] < self.playerList[1].rect.left:
+                # 0左1右
+                if self.playerList[0].movingRight and self.playerList[1].movingLeft:
+                    self.playerList[0].rect.x -= 5
+                    self.playerList[1].rect.x += 5
+                elif self.playerList[0].movingRight or self.playerList[1].movingLeft:
+                    self.playerList[0].rect.x -= 2.5
+                    self.playerList[1].rect.x += 2.5
+            elif self.playerList[0].rect.right > self.playerList[1].rect.left and self.playerList[0].rect.left < self.playerList[1].rect.right and self.playerList[0].rect.center[1] > self.playerList[1].rect.bottom:
+                # 0下1上
+                self.playerList[1].rect.bottom = self.playerList[0].rect.top
+                return self.playerList[1], self.playerList[0]   # stepOnPlayer, isSteped
+            elif self.playerList[0].rect.right > self.playerList[1].rect.left and self.playerList[0].rect.left < self.playerList[1].rect.right and self.playerList[0].rect.center[1] < self.playerList[1].rect.top:
+                # 0上1下
+                self.playerList[0].rect.bottom = self.playerList[1].rect.top
+                return self.playerList[0], self.playerList[1]   # stepOnPlayer, isSteped
+        return None, None
 
     def start(self):
         # 物件初始化
@@ -128,17 +155,17 @@ class Page_Game:
                 return -1
 
             # 碰撞事件
-            self.collisionBallToBall()                  # 球碰球
-            self.collisionBallToBoundary()              # 球碰邊界
-            self.collisionBallToFloor()                 # 球碰地板
-            self.collisionPlayerToBall()                # 玩家碰球
-            self.collisionPlayerToBoundary()            # 玩家碰邊界
-            stepOnFloor = self.collisionPlayerToFloor() # 玩家碰地板
-            self.collisionPlayerToPlayer()              # 玩家碰玩家
+            self.collisionBallToBall()                      # 球碰球
+            self.collisionBallToBoundary()                  # 球碰邊界
+            self.collisionBallToFloor()                     # 球碰地板
+            self.collisionPlayerToBall()                    # 玩家碰球
+            self.collisionPlayerToBoundary()                # 玩家碰邊界
+            stepOnFloor = self.collisionPlayerToFloor()     # 玩家碰地板
+            stepOnPlayer, isSteped = self.collisionPlayerToPlayer()   # 玩家碰玩家
 
             # 更新位置
             self.ballGroup.update()
-            self.playerGroup.update(stepOnFloor)
+            self.playerGroup.update(stepOnFloor, stepOnPlayer, isSteped)
 
             # 顯示
             self.display.displayPageGame(self.ballGroup, self.floorGroup, self.playerGroup)
