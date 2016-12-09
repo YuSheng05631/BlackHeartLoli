@@ -9,7 +9,7 @@ class Ball(pygame.sprite.Sprite):
         # self.image = pygame.transform.rotate(self.img, 60)
         self.startSpeed = -20
         self.fallingSpeed = 0.5
-        self.x_Speed = 5
+        self.x_Speed = 0
         self.y_Speed = -0
 
     def update(self):

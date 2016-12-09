@@ -1,4 +1,4 @@
-import pygame
+import pygame, time
 from Ball import Ball
 from Floor import Floor
 from Player import Player
@@ -25,6 +25,24 @@ class Page_Game:
         self.ballGroup.add(self.ballList)
         self.floorGroup.add(self.floorList)
         self.playerGroup.add(self.playerList)
+        self.startTime = time.time()
+        self.passTime = time.time()
+        self.bestTime = self.readBestTime()
+        self.isOver = -1
+        self.startCounting = False
+        self.startCountingTime = 0
+
+    def writeBestTime(self, bestTime):
+        with open("record.data", "wt") as f:
+            f.write(str(bestTime))
+
+    def readBestTime(self):
+        try:
+            with open("record.data", "rt") as f:
+                return int(f.read())
+        except:
+            self.writeBestTime(0)
+            return 0
 
     def keyEvent(self):     # 按鍵事件
         for event in pygame.event.get():
@@ -146,6 +164,31 @@ class Page_Game:
                 return self.playerList[0], self.playerList[1]   # stepOnPlayer, isSteped
         return None, None
 
+    def gameOver(self):         # 遊戲結束
+        if self.isOver == -1:
+            self.isOver = self.detectGameOver()
+        if self.isOver != -1 and not self.startCounting:
+            self.startCounting = True
+            self.startCountingTime = time.time()
+        if self.startCounting:
+            if self.passTime - self.startCountingTime > 5:   # 倒數五秒
+                if self.readBestTime() < self.bestTime:
+                    self.writeBestTime(self.bestTime)
+                self.initObject()
+
+    def detectGameOver(self):   # 偵測玩家與球是否掉下邊界
+        ct = 0
+        for player in self.playerList:
+            if player.rect.top >= self.display.height:
+                return ct
+            ct += 1
+        ct = 0
+        for ball in self.ballList:
+            if ball.rect.top >= self.display.height:
+                return ct
+            ct += 1
+        return -1
+
     def start(self):
         # 物件初始化
         self.initObject()
@@ -167,7 +210,15 @@ class Page_Game:
             self.ballGroup.update()
             self.playerGroup.update(stepOnFloor, stepOnPlayer, isSteped)
 
+            # 計時
+            self.passTime = time.time()
+            if self.bestTime < self.passTime - self.startTime:
+                self.bestTime = int(self.passTime - self.startTime)
+
+            # 遊戲結束
+            self.gameOver()
+
             # 顯示
-            self.display.displayPageGame(self.ballGroup, self.floorGroup, self.playerGroup)
+            self.display.displayPageGame(self.ballGroup, self.floorGroup, self.playerGroup, self.startTime, self.passTime, self.bestTime, self.isOver)
             pygame.display.update()
             self.clock.tick(60)
