@@ -10,8 +10,9 @@ class Page_Game:
 
     def initObject(self):   # 物件初始化
         self.ballList = [Ball(1, 100, 200), Ball(2, 858, 200)]
+        # self.ballList = [Ball(2, 858, 200)]
         self.floorList = [Floor(106, 560), Floor(412, 560), Floor(718, 560)]
-        # self.floorList = [Floor(100, 560), Floor(300, 560), Floor(500, 560), Floor(700, 560)]
+        # self.floorList = [Floor(0, 560), Floor(100, 560), Floor(300, 560), Floor(500, 560), Floor(700, 560), Floor(900, 560)]
         self.playerList = [Player(2, 100, 460, True), Player(5, 824, 460, False)]
         self.ballGroup = pygame.sprite.Group()
         self.floorGroup = pygame.sprite.Group()
@@ -81,31 +82,89 @@ class Page_Game:
                     self.playerList[1].movingRight = False
 
     def collisionBallToBall(self):          # 球碰球
-        pass
+        c = pygame.sprite.collide_rect(self.ballList[0], self.ballList[1])
+        if c:
+            self.ballList[0].rotate()   # 旋轉
+            self.ballList[1].rotate()
+            if self.ballList[0].rect.top < self.ballList[1].rect.bottom and self.ballList[0].rect.bottom > self.ballList[1].rect.top and self.ballList[0].rect.center[0] > self.ballList[1].rect.right:
+                # 0右1左
+                self.ballList[0].x_Speed *= -1
+                self.ballList[1].x_Speed *= -1
+                self.ballList[0].rect.x += 5
+                self.ballList[1].rect.x -= 5
+            elif self.ballList[0].rect.top < self.ballList[1].rect.bottom and self.ballList[0].rect.bottom > self.ballList[1].rect.top and self.ballList[0].rect.center[0] < self.ballList[1].rect.left:
+                # 0左1右
+                self.ballList[0].x_Speed *= -1
+                self.ballList[1].x_Speed *= -1
+                self.ballList[0].rect.x -= 5
+                self.ballList[1].rect.x += 5
+            elif self.ballList[0].rect.right > self.ballList[1].rect.left and self.ballList[0].rect.left < self.ballList[1].rect.right and self.ballList[0].rect.center[1] > self.ballList[1].rect.bottom:
+                # 0下1上
+                self.ballList[0].y_Speed *= -1
+                self.ballList[1].y_Speed *= -1
+                self.ballList[0].rect.y += 5
+                self.ballList[1].rect.y -= 5
+            elif self.ballList[0].rect.right > self.ballList[1].rect.left and self.ballList[0].rect.left < self.ballList[1].rect.right and self.ballList[0].rect.center[1] < self.ballList[1].rect.top:
+                # 0上1下
+                self.ballList[0].y_Speed *= -1
+                self.ballList[1].y_Speed *= -1
+                self.ballList[0].rect.y -= 5
+                self.ballList[1].rect.y += 5
 
     def collisionBallToBoundary(self):      # 球碰邊界
         for ball in self.ballList:
             if ball.rect.right >= self.display.width:
                 ball.x_Speed *= -1
+                ball.rect.x -= 2
+                ball.rotate()   # 旋轉
             elif ball.rect.left <= 0:
                 ball.x_Speed *= -1
+                ball.rect.x += 2
+                ball.rotate()   # 旋轉
 
     def collisionBallToFloor(self):         # 球碰地板
         d = pygame.sprite.groupcollide(self.ballGroup, self.floorGroup, False, False)
         if d:
             for ball, floorList in d.items():
+                ball.rotate()   # 旋轉
                 for floor in floorList:
                     if ball.rect.top < floor.rect.bottom and ball.rect.bottom > floor.rect.top and ball.rect.center[0] - 30 > floor.rect.right:
                          ball.x_Speed *= -1 # 向左
                     elif ball.rect.top < floor.rect.bottom and ball.rect.bottom > floor.rect.top and ball.rect.center[0] + 30 < floor.rect.left:
                          ball.x_Speed *= -1 # 向右
                     elif ball.rect.right > floor.rect.left and ball.rect.left < floor.rect.right and ball.rect.center[1] > floor.rect.bottom:
-                         ball.y_Speed = 0 # 向上
+                         ball.y_Speed *= -1 # 向上
                     elif ball.rect.right > floor.rect.left and ball.rect.left < floor.rect.right and ball.rect.center[1] < floor.rect.top:
                          ball.y_Speed = ball.startSpeed # 向下
 
     def collisionPlayerToBall(self):        # 玩家碰球
-        pass
+        d = pygame.sprite.groupcollide(self.playerGroup, self.ballGroup, False, False)
+        if d:
+            for player, ballList in d.items():
+                for ball in ballList:
+                    ball.rotate()   # 旋轉
+                    m = 0           # 斜率
+                    if (ball.rect.center[0] != player.rect.center[0]):
+                        m = -(ball.rect.center[1] - player.rect.center[1]) / (ball.rect.center[0] - player.rect.center[0])
+                    else:
+                        m = -(ball.rect.center[1] - player.rect.center[1]) / 0.001
+                    ball.x_Speed = ((1 ** 2) / (1 + (m ** 2))) ** 0.5  # 速度 = 1
+                    ball.y_Speed = ball.x_Speed * m
+                    if m < 0:
+                        ball.x_Speed *= -1
+                        ball.y_Speed *= -1
+                    if player.rect.midbottom[1] < ball.rect.midbottom[1] - 5:
+                        ball.y_Speed -= ball.startSpeed
+                        if m < 0:
+                            ball.x_Speed += 3
+                        else:
+                            ball.x_Speed -= 3
+                    else:
+                        ball.y_Speed += ball.startSpeed
+                        if m < 0:
+                            ball.x_Speed -= 3
+                        else:
+                            ball.x_Speed += 3
 
     def collisionPlayerToBoundary(self):    # 玩家碰邊界
         for player in self.playerList:
@@ -138,16 +197,16 @@ class Page_Game:
                     self.playerList[0].rect.x += 5
                     self.playerList[1].rect.x -= 5
                 elif self.playerList[0].movingLeft or self.playerList[1].movingRight:
-                    self.playerList[0].rect.x += 2.5
-                    self.playerList[1].rect.x -= 2.5
+                    self.playerList[0].rect.x += 3
+                    self.playerList[1].rect.x -= 3
             elif self.playerList[0].rect.top < self.playerList[1].rect.bottom and self.playerList[0].rect.bottom > self.playerList[1].rect.top and self.playerList[0].rect.center[0] < self.playerList[1].rect.left:
                 # 0左1右
                 if self.playerList[0].movingRight and self.playerList[1].movingLeft:
                     self.playerList[0].rect.x -= 5
                     self.playerList[1].rect.x += 5
                 elif self.playerList[0].movingRight or self.playerList[1].movingLeft:
-                    self.playerList[0].rect.x -= 2.5
-                    self.playerList[1].rect.x += 2.5
+                    self.playerList[0].rect.x -= 3
+                    self.playerList[1].rect.x += 3
             elif self.playerList[0].rect.right > self.playerList[1].rect.left and self.playerList[0].rect.left < self.playerList[1].rect.right and self.playerList[0].rect.center[1] > self.playerList[1].rect.bottom:
                 # 0下1上
                 self.playerList[1].rect.bottom = self.playerList[0].rect.top
@@ -194,8 +253,8 @@ class Page_Game:
             # 碰撞事件
             self.collisionBallToBall()                      # 球碰球
             self.collisionBallToBoundary()                  # 球碰邊界
-            self.collisionBallToFloor()                     # 球碰地板
             self.collisionPlayerToBall()                    # 玩家碰球
+            self.collisionBallToFloor()                     # 球碰地板
             self.collisionPlayerToBoundary()                # 玩家碰邊界
             stepOnFloor = self.collisionPlayerToFloor()     # 玩家碰地板
             stepOnPlayer, isSteped = self.collisionPlayerToPlayer()   # 玩家碰玩家
