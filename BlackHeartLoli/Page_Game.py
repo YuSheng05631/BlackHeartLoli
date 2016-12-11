@@ -128,13 +128,13 @@ class Page_Game:
             for ball, floorList in d.items():
                 ball.rotate()   # 旋轉
                 for floor in floorList:
-                    if ball.rect.top < floor.rect.bottom and ball.rect.bottom > floor.rect.top and ball.rect.center[0] - 30 > floor.rect.right:
+                    if ball.rect.center[0] - 30 > floor.rect.right:
                          ball.x_Speed *= -1 # 向左
-                    elif ball.rect.top < floor.rect.bottom and ball.rect.bottom > floor.rect.top and ball.rect.center[0] + 30 < floor.rect.left:
+                    elif ball.rect.center[0] + 30 < floor.rect.left:
                          ball.x_Speed *= -1 # 向右
-                    elif ball.rect.right > floor.rect.left and ball.rect.left < floor.rect.right and ball.rect.center[1] > floor.rect.bottom:
+                    elif ball.rect.center[1] > floor.rect.bottom:
                          ball.y_Speed *= -1 # 向上
-                    elif ball.rect.right > floor.rect.left and ball.rect.left < floor.rect.right and ball.rect.center[1] < floor.rect.top:
+                    elif ball.rect.center[1] < floor.rect.top:
                          ball.y_Speed = ball.startSpeed # 向下
 
     def collisionPlayerToBall(self):        # 玩家碰球
@@ -144,27 +144,34 @@ class Page_Game:
                 for ball in ballList:
                     ball.rotate()   # 旋轉
                     m = 0           # 斜率
+                    x_Bonus = 0     # 以斜率決定額外的x增加速度
+                    # 計算斜率
                     if (ball.rect.center[0] != player.rect.center[0]):
                         m = -(ball.rect.center[1] - player.rect.center[1]) / (ball.rect.center[0] - player.rect.center[0])
                     else:
                         m = -(ball.rect.center[1] - player.rect.center[1]) / 0.001
-                    ball.x_Speed = ((1 ** 2) / (1 + (m ** 2))) ** 0.5  # 速度 = 1
-                    ball.y_Speed = ball.x_Speed * m
-                    if m < 0:
-                        ball.x_Speed *= -1
-                        ball.y_Speed *= -1
+                    # 計算 x_Bonus
+                    if m != 0:
+                        x_Bonus = 2 / m
+                    if x_Bonus > 10:
+                        x_Bonus = 10
+                    elif x_Bonus < -10:
+                        x_Bonus = -10
+                    # 改變球速
                     if player.rect.midbottom[1] < ball.rect.midbottom[1] - 5:
-                        ball.y_Speed -= ball.startSpeed
+                        # 人上球下
+                        ball.y_Speed = -ball.startSpeed
                         if m < 0:
-                            ball.x_Speed += 3
+                            ball.x_Speed = 1 - x_Bonus
                         else:
-                            ball.x_Speed -= 3
+                            ball.x_Speed = -1 - x_Bonus
                     else:
-                        ball.y_Speed += ball.startSpeed
+                        # 人下球上
+                        ball.y_Speed = ball.startSpeed
                         if m < 0:
-                            ball.x_Speed -= 3
+                            ball.x_Speed = -1 + x_Bonus
                         else:
-                            ball.x_Speed += 3
+                            ball.x_Speed = 1 + x_Bonus
 
     def collisionPlayerToBoundary(self):    # 玩家碰邊界
         for player in self.playerList:
@@ -178,13 +185,13 @@ class Page_Game:
         if d:
             for player, floorList in d.items():
                 for floor in floorList:
-                    if player.rect.top < floor.rect.bottom and player.rect.bottom > floor.rect.top and player.rect.center[0] - 30 > floor.rect.right:
+                    if player.rect.center[0] - 30 > floor.rect.right:
                         player.rect.left = floor.rect.right # 向左
-                    elif player.rect.top < floor.rect.bottom and player.rect.bottom > floor.rect.top and player.rect.center[0] + 30 < floor.rect.left:
+                    elif player.rect.center[0] + 30 < floor.rect.left:
                         player.rect.right = floor.rect.left # 向右
-                    elif player.rect.right > floor.rect.left and player.rect.left < floor.rect.right and player.rect.center[1] > floor.rect.bottom:
+                    elif player.rect.center[1] > floor.rect.bottom:
                         player.rect.top = floor.rect.bottom # 向上
-                    elif player.rect.right > floor.rect.left and player.rect.left < floor.rect.right and player.rect.center[1] < floor.rect.top:
+                    elif player.rect.center[1] < floor.rect.top:
                         player.rect.bottom = floor.rect.top # 向下
             return d.keys() # stepOnFloor
 
