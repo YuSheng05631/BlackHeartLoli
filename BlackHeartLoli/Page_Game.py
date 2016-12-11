@@ -8,12 +8,14 @@ class Page_Game:
         self.display = display
         self.clock = pygame.time.Clock()
 
-    def initObject(self):   # 物件初始化
+    def initObject(self, id1, id2):   # 物件初始化
+        self.id1 = id1
+        self.id2 = id2
         self.ballList = [Ball(1, 100, 200), Ball(2, 858, 200)]
         # self.ballList = [Ball(2, 858, 200)]
         self.floorList = [Floor(106, 560), Floor(412, 560), Floor(718, 560)]
         # self.floorList = [Floor(0, 560), Floor(100, 560), Floor(300, 560), Floor(500, 560), Floor(700, 560), Floor(900, 560)]
-        self.playerList = [Player(2, 100, 460, True), Player(5, 824, 460, False)]
+        self.playerList = [Player(self.id1, 100, 460, True), Player(self.id2, 824, 460, False)]
         self.ballGroup = pygame.sprite.Group()
         self.floorGroup = pygame.sprite.Group()
         self.playerGroup = pygame.sprite.Group()
@@ -234,7 +236,7 @@ class Page_Game:
             if self.passTime - self.startCountingTime > 5:   # 倒數五秒
                 if self.readBestTime() < self.bestTime:
                     self.writeBestTime(self.bestTime)
-                self.initObject()
+                self.initObject(self.id1, self.id2)
 
     def detectGameOver(self):   # 偵測玩家與球是否掉下邊界
         ct = 0
@@ -249,9 +251,9 @@ class Page_Game:
             ct += 1
         return -1
 
-    def start(self):
+    def start(self, id1, id2):
         # 物件初始化
-        self.initObject()
+        self.initObject(id1, id2)
         while True:
             # 按鍵事件
             if self.keyEvent():

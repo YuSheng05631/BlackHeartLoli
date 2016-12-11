@@ -4,7 +4,7 @@ class Player(pygame.sprite.Sprite):
     def __init__(self, id, x, y, flip:bool):
         pygame.sprite.Sprite.__init__(self)
         self.flip = flip
-        self.image = pygame.image.load("Pictures/Player{}.png".format(id))
+        self.image = pygame.image.load("Pictures/Player{}.png".format(id + 1))
         self.image = pygame.transform.flip(self.image, self.flip, False)
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)

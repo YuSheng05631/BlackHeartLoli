@@ -7,10 +7,20 @@ class Display:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.background = pygame.image.load("Pictures/Backgound.jpg")
         self.menuButtons = [pygame.image.load("Pictures/Page_Menu_Buttons1.png"), pygame.image.load("Pictures/Page_Menu_Buttons2.png"), pygame.image.load("Pictures/Page_Menu_Buttons3.png")]
+        self.playerImages = self.generatePlayerImages()
+        self.boxImages = [pygame.image.load("Pictures/box1.png"), pygame.image.load("Pictures/box2.png")]
         pygame.display.set_caption("Black Heart Loli")
         self.keepTextTitle = self.displayText("Black Heart Loli", x=100, y=100, size=100, italic=True)
         self.keepTextGameOver = self.displayText("Game Over", x=100, y=100, size=100)
         self.keepTextPlayerWin = [self.displayText("Player 2 Win!", x=200, y=200, size=100), self.displayText("Player 1 Win!", x=200, y=200, size=100)]
+
+    def generatePlayerImages(self):
+        playerImages = list()
+        for i in range(1, 6):
+            playerImages.append(pygame.image.load("Pictures/Player{}.png".format(i)))
+        for i in range(0, 5):
+            playerImages.append(pygame.transform.flip(playerImages[i], True, False))
+        return playerImages
 
     def displayPageGame(self, balls, floors, players, startTime, passTime, bestTime, isOver):
         self.screen.blit(self.background, (0, 0))
@@ -27,6 +37,21 @@ class Display:
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.menuButtons[mbIndex], (100, 300))
         self.displayKeepText(self.keepTextTitle)
+
+    def displayPageRole(self, id1, id2):
+        self.screen.blit(self.background, (0, 0))
+        ct = 0
+        for x in range(400, 1000, 120):
+            self.screen.blit(self.playerImages[ct], (x, 460))
+            ct += 1
+        for x in range(50, 650, 120):
+            self.screen.blit(self.playerImages[ct], (x, 220))
+            ct += 1
+        self.displayText("Choose Role", x=20, y=20, size=80)
+        self.displayText("Player 1", x=50, y=120, size=50)
+        self.displayText("Player 2", x=760, y=360, size=50)
+        self.screen.blit(self.boxImages[0], (15 + id1 * 120, 180))
+        self.screen.blit(self.boxImages[1], (365 + id2 * 120, 420))
 
     def displayPageRule(self):
         self.screen.blit(self.background, (0, 0))

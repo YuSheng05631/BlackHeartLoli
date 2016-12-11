@@ -3,15 +3,15 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>7992c6ce-96a1-4623-8b03-69db447b6b88</ProjectGuid>
+    <ProjectGuid>221f2b9f-2379-4829-a196-699bc1a7b84f</ProjectGuid>
     <ProjectHome>.</ProjectHome>
-    <StartupFile>main.py</StartupFile>
+    <StartupFile>Page_Role.py</StartupFile>
     <SearchPath>
     </SearchPath>
     <WorkingDirectory>.</WorkingDirectory>
     <OutputPath>.</OutputPath>
-    <Name>BlackHeartLoli</Name>
-    <RootNamespace>BlackHeartLoli</RootNamespace>
+    <Name>Page_Role</Name>
+    <RootNamespace>Page_Role</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,31 +22,7 @@
     <EnableUnmanagedDebugging>false</EnableUnmanagedDebugging>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Ball.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Floor.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="main.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Page_Game.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Page_Menu.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Page_Role.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Page_Rule.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Player.py">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Display.py" />
+    <Compile Include="Page_Role.py" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
