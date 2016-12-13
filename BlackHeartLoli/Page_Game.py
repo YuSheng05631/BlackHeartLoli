@@ -64,7 +64,7 @@ class Page_Game:
                 elif event.key == pygame.K_RIGHT:
                     self.playerList[1].movingRight = True
                 # 離開
-                elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
+                elif event.key == pygame.K_ESCAPE:
                     return True
             # 按鍵放開
             if event.type == pygame.KEYUP:
@@ -230,6 +230,10 @@ class Page_Game:
         if self.isOver == -1:
             self.isOver = self.detectGameOver()
         if self.isOver != -1 and not self.startCounting:
+            if self.isOver == 0:
+                self.win2 += 1
+            else:
+                self.win1 += 1
             self.startCounting = True
             self.startCountingTime = time.time()
         if self.startCounting:
@@ -253,6 +257,8 @@ class Page_Game:
 
     def start(self, id1, id2):
         # 物件初始化
+        self.win1 = 0
+        self.win2 = 0
         self.initObject(id1, id2)
         while True:
             # 按鍵事件
@@ -281,6 +287,6 @@ class Page_Game:
             self.gameOver()
 
             # 顯示
-            self.display.displayPageGame(self.ballGroup, self.floorGroup, self.playerGroup, self.startTime, self.passTime, self.bestTime, self.isOver)
+            self.display.displayPageGame(self.ballGroup, self.floorGroup, self.playerGroup, self.win1, self.win2, self.startTime, self.passTime, self.bestTime, self.isOver)
             pygame.display.update()
             self.clock.tick(60)

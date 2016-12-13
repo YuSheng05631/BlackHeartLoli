@@ -9,13 +9,13 @@ class Page_Role:
         
     def start(self):
         while True:
-            # ¾Ş§@¨Æ¥ó
+            # æ“ä½œäº‹ä»¶
             for event in pygame.event.get():
-                # Â÷¶}
+                # é›¢é–‹
                 if event.type == pygame.QUIT:
                     pygame.quit()
                     quit()
-                # «öÁä«ö¤U
+                # æŒ‰éµæŒ‰ä¸‹
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_a:
                         self.id1 -= 1
@@ -26,7 +26,7 @@ class Page_Role:
                     elif event.key == pygame.K_RIGHT:
                         self.id2 += 1
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                        return self.id1, self.id2   # ¶i¤J¹CÀ¸µe­±
+                        return self.id1, self.id2   # é€²å…¥éŠæˆ²ç•«é¢
                     if self.id1 < 0:
                         self.id1 = 4
                     elif self.id1 > 4:
@@ -35,7 +35,7 @@ class Page_Role:
                         self.id2 = 4
                     elif self.id2 > 4:
                         self.id2 = 0
-            # Åã¥Ü
+            # é¡¯ç¤º
             self.display.displayPageRole(self.id1, self.id2)
             pygame.display.update()
             self.clock.tick(60)

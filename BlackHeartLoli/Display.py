@@ -7,6 +7,7 @@ class Display:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.background = pygame.image.load("Pictures/Backgound.jpg")
         self.menuButtons = [pygame.image.load("Pictures/Page_Menu_Buttons1.png"), pygame.image.load("Pictures/Page_Menu_Buttons2.png"), pygame.image.load("Pictures/Page_Menu_Buttons3.png")]
+        self.ruleImages = [pygame.image.load("Pictures/rule1.png"), pygame.image.load("Pictures/rule2.png")]
         self.playerImages = self.generatePlayerImages()
         self.boxImages = [pygame.image.load("Pictures/box1.png"), pygame.image.load("Pictures/box2.png")]
         pygame.display.set_caption("Black Heart Loli")
@@ -22,13 +23,15 @@ class Display:
             playerImages.append(pygame.transform.flip(playerImages[i], True, False))
         return playerImages
 
-    def displayPageGame(self, balls, floors, players, startTime, passTime, bestTime, isOver):
+    def displayPageGame(self, balls, floors, players, win1, win2, startTime, passTime, bestTime, isOver):
         self.screen.blit(self.background, (0, 0))
         balls.draw(self.screen)
         floors.draw(self.screen)
         players.draw(self.screen)
-        self.displayText("Pass Time: {} Sec".format(int(passTime - startTime)), x=10, y=10, size=25)
-        self.displayText("Best Time: {} Sec".format(bestTime), x=15, y=40, size=25)
+        self.displayText("Player 1 Win: {} Times".format(win1), x=10, y=10, size=20)
+        self.displayText("Player 2 Win: {} Times".format(win2), x=10, y=40, size=20)
+        self.displayText("Pass Time: {} Sec".format(int(passTime - startTime)), x=820, y=10, size=20)
+        self.displayText("Best Time: {} Sec".format(bestTime), x=820, y=40, size=20)
         if isOver != -1:
             self.displayKeepText(self.keepTextGameOver)
             self.displayKeepText(self.keepTextPlayerWin[isOver])
@@ -53,9 +56,9 @@ class Display:
         self.screen.blit(self.boxImages[0], (15 + id1 * 120, 180))
         self.screen.blit(self.boxImages[1], (365 + id2 * 120, 420))
 
-    def displayPageRule(self):
+    def displayPageRule(self, ruleIndex):
         self.screen.blit(self.background, (0, 0))
-        self.displayText("Rule ...", x=100, y=100, size=100)
+        self.screen.blit(self.ruleImages[ruleIndex], (0, 0))
 
     def displayText(self, text, x, y, size, color=(0, 0, 0), bold=False, italic=False):
         font = pygame.font.Font("Fonts/freesansbold.ttf", size)
