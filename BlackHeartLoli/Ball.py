@@ -19,7 +19,7 @@ class Ball(pygame.sprite.Sprite):
         return imageRotated
 
     def rotate(self):
-        self.image = random.sample(self.imageRotated, 1)[0]
+        self.image = random.choice(self.imageRotated)
 
     def update(self):
         if self.y_Speed < 20:

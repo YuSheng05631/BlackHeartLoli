@@ -6,6 +6,7 @@ class Page_Role:
         self.clock = pygame.time.Clock()
         self.id1 = 0
         self.id2 = 4
+        self.dbIndex = 0
         
     def start(self):
         while True:
@@ -25,8 +26,12 @@ class Page_Role:
                         self.id2 -= 1
                     elif event.key == pygame.K_RIGHT:
                         self.id2 += 1
+                    elif event.key == pygame.K_UP or event.key == pygame.K_w:
+                        self.dbIndex -= 1
+                    elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+                        self.dbIndex += 1
                     elif event.key == pygame.K_RETURN or event.key == pygame.K_KP_ENTER:
-                        return self.id1, self.id2   # 進入遊戲畫面
+                        return self.id1, self.id2, self.dbIndex     # 進入遊戲畫面
                     if self.id1 < 0:
                         self.id1 = 4
                     elif self.id1 > 4:
@@ -35,7 +40,12 @@ class Page_Role:
                         self.id2 = 4
                     elif self.id2 > 4:
                         self.id2 = 0
+                    if self.dbIndex < 0:
+                        self.dbIndex = 2
+                    elif self.dbIndex > 2:
+                        self.dbIndex = 0
+                    
             # 顯示
-            self.display.displayPageRole(self.id1, self.id2)
+            self.display.displayPageRole(self.id1, self.id2, self.dbIndex)
             pygame.display.update()
             self.clock.tick(60)

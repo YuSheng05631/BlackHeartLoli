@@ -7,6 +7,7 @@ class Display:
         self.screen = pygame.display.set_mode((self.width, self.height))
         self.background = pygame.image.load("Pictures/Backgound.jpg")
         self.menuButtons = [pygame.image.load("Pictures/Page_Menu_Buttons1.png"), pygame.image.load("Pictures/Page_Menu_Buttons2.png"), pygame.image.load("Pictures/Page_Menu_Buttons3.png")]
+        self.difficultyButtons = [pygame.image.load("Pictures/Difficulty_Buttons1.png"), pygame.image.load("Pictures/Difficulty_Buttons2.png"), pygame.image.load("Pictures/Difficulty_Buttons3.png")]
         self.ruleImages = [pygame.image.load("Pictures/rule1.png"), pygame.image.load("Pictures/rule2.png")]
         self.playerImages = self.generatePlayerImages()
         self.boxImages = [pygame.image.load("Pictures/box1.png"), pygame.image.load("Pictures/box2.png")]
@@ -40,8 +41,9 @@ class Display:
         self.screen.blit(self.background, (0, 0))
         self.screen.blit(self.menuButtons[mbIndex], (100, 300))
         self.displayKeepText(self.keepTextTitle)
+        self.displayText("All the pictures and musics are from the Internet.", x=520, y=560, size=20)
 
-    def displayPageRole(self, id1, id2):
+    def displayPageRole(self, id1, id2, dbIndex):
         self.screen.blit(self.background, (0, 0))
         ct = 0
         for x in range(400, 1000, 120):
@@ -55,6 +57,7 @@ class Display:
         self.displayText("Player 2", x=760, y=360, size=50)
         self.screen.blit(self.boxImages[0], (15 + id1 * 120, 180))
         self.screen.blit(self.boxImages[1], (365 + id2 * 120, 420))
+        self.screen.blit(self.difficultyButtons[dbIndex], (700, 50))
 
     def displayPageRule(self, ruleIndex):
         self.screen.blit(self.background, (0, 0))

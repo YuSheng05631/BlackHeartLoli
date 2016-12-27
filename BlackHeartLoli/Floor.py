@@ -1,4 +1,4 @@
-import pygame
+import pygame, random
 
 class Floor(pygame.sprite.Sprite):
     def __init__(self, x, y):
@@ -6,6 +6,7 @@ class Floor(pygame.sprite.Sprite):
         self.image = pygame.image.load("Pictures/floor.jpg")
         self.rect = self.image.get_rect()
         self.rect.topleft = (x, y)
+        self.move = 0
 
     def update(self):
-        pass
+        self.rect.x += self.move

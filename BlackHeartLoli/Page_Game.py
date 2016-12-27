@@ -1,4 +1,4 @@
-import pygame, time
+import pygame, time, random
 from Ball import Ball
 from Floor import Floor
 from Player import Player
@@ -8,9 +8,10 @@ class Page_Game:
         self.display = display
         self.clock = pygame.time.Clock()
 
-    def initObject(self, id1, id2):   # 物件初始化
+    def initObject(self, id1, id2, dbIndex):    # 物件初始化
         self.id1 = id1
         self.id2 = id2
+        self.dbIndex = dbIndex
         self.ballList = [Ball(1, 100, 200), Ball(2, 858, 200)]
         # self.ballList = [Ball(2, 858, 200)]
         self.floorList = [Floor(106, 560), Floor(412, 560), Floor(718, 560)]
@@ -28,6 +29,7 @@ class Page_Game:
         self.isOver = -1
         self.startCounting = False
         self.startCountingTime = 0
+        self.initFloorMove()    # 依難度決定地板的移動方向
 
     def writeBestTime(self, bestTime):
         with open("record.data", "wt") as f:
@@ -83,7 +85,7 @@ class Page_Game:
                 elif event.key == pygame.K_RIGHT:
                     self.playerList[1].movingRight = False
 
-    def collisionBallToBall(self):          # 球碰球
+    def collisionBallToBall(self):              # 球碰球
         c = pygame.sprite.collide_rect(self.ballList[0], self.ballList[1])
         if c:
             self.ballList[0].rotate()   # 旋轉
@@ -113,7 +115,7 @@ class Page_Game:
                 self.ballList[0].rect.y -= 5
                 self.ballList[1].rect.y += 5
 
-    def collisionBallToBoundary(self):      # 球碰邊界
+    def collisionBallToBoundary(self):          # 球碰邊界
         for ball in self.ballList:
             if ball.rect.right >= self.display.width:
                 ball.x_Speed *= -1
@@ -124,7 +126,7 @@ class Page_Game:
                 ball.rect.x += 2
                 ball.rotate()   # 旋轉
 
-    def collisionBallToFloor(self):         # 球碰地板
+    def collisionBallToFloor(self):             # 球碰地板
         d = pygame.sprite.groupcollide(self.ballGroup, self.floorGroup, False, False)
         if d:
             for ball, floorList in d.items():
@@ -139,7 +141,7 @@ class Page_Game:
                     elif ball.rect.center[1] < floor.rect.top:
                          ball.y_Speed = ball.startSpeed # 向下
 
-    def collisionPlayerToBall(self):        # 玩家碰球
+    def collisionPlayerToBall(self):            # 玩家碰球
         d = pygame.sprite.groupcollide(self.playerGroup, self.ballGroup, False, False)
         if d:
             for player, ballList in d.items():
@@ -175,14 +177,14 @@ class Page_Game:
                         else:
                             ball.x_Speed = 1 + x_Bonus
 
-    def collisionPlayerToBoundary(self):    # 玩家碰邊界
+    def collisionPlayerToBoundary(self):        # 玩家碰邊界
         for player in self.playerList:
             if player.rect.right >= self.display.width:
                 player.rect.right = self.display.width
             elif player.rect.left <= 0:
                 player.rect.left = 0
 
-    def collisionPlayerToFloor(self):       # 玩家碰地板
+    def collisionPlayerToFloor(self):           # 玩家碰地板
         d = pygame.sprite.groupcollide(self.playerGroup, self.floorGroup, False, False)
         if d:
             for player, floorList in d.items():
@@ -197,7 +199,7 @@ class Page_Game:
                         player.rect.bottom = floor.rect.top # 向下
             return d.keys() # stepOnFloor
 
-    def collisionPlayerToPlayer(self):      # 玩家碰玩家
+    def collisionPlayerToPlayer(self):          # 玩家碰玩家
         c = pygame.sprite.collide_rect(self.playerList[0], self.playerList[1])
         if c:
             if self.playerList[0].rect.top < self.playerList[1].rect.bottom and self.playerList[0].rect.bottom > self.playerList[1].rect.top and self.playerList[0].rect.center[0] > self.playerList[1].rect.right:
@@ -226,6 +228,35 @@ class Page_Game:
                 return self.playerList[0], self.playerList[1]   # stepOnPlayer, isSteped
         return None, None
 
+    def collisionFloorToBoundaryNormal(self):   # 地板碰邊界(Normal)
+        if self.floorList[0].rect.left <= 25 or self.floorList[2].rect.right >= self.display.width - 25:
+            for floor in self.floorList:
+                floor.move *= -1
+
+    def collisionFloorToBoundaryHard(self):     # 地板碰邊界(Hard)
+        for floor in self.floorList:
+            if floor.rect.right >= self.display.width - 0 or floor.rect.left <= 0:
+                floor.move *= -1
+
+    def collisionFloorToFloor(self):            # 地板碰地板
+        c0 = pygame.sprite.collide_rect(self.floorList[0], self.floorList[1])
+        c1 = pygame.sprite.collide_rect(self.floorList[1], self.floorList[2])
+        if c0:
+            self.floorList[0].move *= -1
+            self.floorList[1].move *= -1
+        if c1:
+            self.floorList[1].move *= -1
+            self.floorList[2].move *= -1
+
+    def initFloorMove(self):    # 依難度決定地板的移動方向
+        if self.dbIndex == 1:
+            m = random.choice([1, -1])
+            for floor in self.floorList:
+                floor.move = m
+        elif self.dbIndex == 2:
+            for floor in self.floorList:
+                floor.move = random.choice([1, -1])
+
     def gameOver(self):         # 遊戲結束
         if self.isOver == -1:
             self.isOver = self.detectGameOver()
@@ -240,7 +271,7 @@ class Page_Game:
             if self.passTime - self.startCountingTime > 5:   # 倒數五秒
                 if self.readBestTime() < self.bestTime:
                     self.writeBestTime(self.bestTime)
-                self.initObject(self.id1, self.id2)
+                self.initObject(self.id1, self.id2, self.dbIndex)
 
     def detectGameOver(self):   # 偵測玩家與球是否掉下邊界
         ct = 0
@@ -255,11 +286,11 @@ class Page_Game:
             ct += 1
         return -1
 
-    def start(self, id1, id2):
+    def start(self, id1, id2, dbIndex):
         # 物件初始化
         self.win1 = 0
         self.win2 = 0
-        self.initObject(id1, id2)
+        self.initObject(id1, id2, dbIndex)
         while True:
             # 按鍵事件
             if self.keyEvent():
@@ -273,10 +304,16 @@ class Page_Game:
             self.collisionPlayerToBoundary()                # 玩家碰邊界
             stepOnFloor = self.collisionPlayerToFloor()     # 玩家碰地板
             stepOnPlayer, isSteped = self.collisionPlayerToPlayer()   # 玩家碰玩家
+            if dbIndex == 1:
+                self.collisionFloorToBoundaryNormal()       # 地板碰邊界(Normal)
+            elif dbIndex == 2:
+                self.collisionFloorToBoundaryHard()         # 地板碰邊界(Hard)
+                self.collisionFloorToFloor()                # 地板碰地板
 
             # 更新位置
             self.ballGroup.update()
             self.playerGroup.update(stepOnFloor, stepOnPlayer, isSteped)
+            self.floorGroup.update()
 
             # 計時
             self.passTime = time.time()

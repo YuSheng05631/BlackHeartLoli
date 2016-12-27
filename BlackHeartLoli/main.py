@@ -18,6 +18,7 @@ class main:
         self.mbIndex = -1
         self.id1 = 0
         self.id2 = 0
+        self.dbIndex = 0
         pygame.mixer.music.load("Music/Daydream cafe (Instrumental).mp3")
         pygame.mixer.music.play(loops=-1)
         self.start()
@@ -27,8 +28,8 @@ class main:
             if self.mbIndex == -1:
                 self.mbIndex = self.pageMenu.start()    # 主畫面
             elif self.mbIndex == 0:
-                self.id1, self.id2 = self.pageRole.start()                # 角色畫面
-                self.mbIndex = self.pageGame.start(self.id1, self.id2)    # 遊戲畫面
+                self.id1, self.id2, self.dbIndex = self.pageRole.start()                # 角色畫面
+                self.mbIndex = self.pageGame.start(self.id1, self.id2, self.dbIndex)    # 遊戲畫面
             elif self.mbIndex == 1:
                 self.mbIndex = self.pageRule.start()    # 規則畫面
             elif self.mbIndex == 2:
