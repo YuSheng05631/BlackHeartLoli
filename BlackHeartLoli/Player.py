@@ -54,6 +54,6 @@ class Player(pygame.sprite.Sprite):
         if self.movingDown:
             self.rect.y += 8
         if self.movingLeft:
-            self.rect.x -= 5
+            self.rect.x -= 6
         if self.movingRight:
-            self.rect.x += 5
+            self.rect.x += 6

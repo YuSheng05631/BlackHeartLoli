@@ -31,6 +31,15 @@ class Page_Game:
         self.startCountingTime = 0
         self.initFloorMove()    # 依難度決定地板的移動方向
 
+    def initFloorMove(self):    # 依難度決定地板的移動方向
+        if self.dbIndex == 1:
+            m = random.choice([1, -1])
+            for floor in self.floorList:
+                floor.move = m
+        elif self.dbIndex == 2:
+            for floor in self.floorList:
+                floor.move = random.choice([1, -1])
+
     def writeBestTime(self, bestTime):
         with open("record.data", "wt") as f:
             f.write(str(bestTime))
@@ -187,6 +196,7 @@ class Page_Game:
     def collisionPlayerToFloor(self):           # 玩家碰地板
         d = pygame.sprite.groupcollide(self.playerGroup, self.floorGroup, False, False)
         if d:
+            stepOnFloor = list()
             for player, floorList in d.items():
                 for floor in floorList:
                     if player.rect.center[0] - 30 > floor.rect.right:
@@ -197,7 +207,8 @@ class Page_Game:
                         player.rect.top = floor.rect.bottom # 向上
                     elif player.rect.center[1] < floor.rect.top:
                         player.rect.bottom = floor.rect.top # 向下
-            return d.keys() # stepOnFloor
+                        stepOnFloor.append(player)
+            return stepOnFloor
 
     def collisionPlayerToPlayer(self):          # 玩家碰玩家
         c = pygame.sprite.collide_rect(self.playerList[0], self.playerList[1])
@@ -205,16 +216,16 @@ class Page_Game:
             if self.playerList[0].rect.top < self.playerList[1].rect.bottom and self.playerList[0].rect.bottom > self.playerList[1].rect.top and self.playerList[0].rect.center[0] > self.playerList[1].rect.right:
                 # 0右1左
                 if self.playerList[0].movingLeft and self.playerList[1].movingRight:
-                    self.playerList[0].rect.x += 5
-                    self.playerList[1].rect.x -= 5
+                    self.playerList[0].rect.x += 6
+                    self.playerList[1].rect.x -= 6
                 elif self.playerList[0].movingLeft or self.playerList[1].movingRight:
                     self.playerList[0].rect.x += 3
                     self.playerList[1].rect.x -= 3
             elif self.playerList[0].rect.top < self.playerList[1].rect.bottom and self.playerList[0].rect.bottom > self.playerList[1].rect.top and self.playerList[0].rect.center[0] < self.playerList[1].rect.left:
                 # 0左1右
                 if self.playerList[0].movingRight and self.playerList[1].movingLeft:
-                    self.playerList[0].rect.x -= 5
-                    self.playerList[1].rect.x += 5
+                    self.playerList[0].rect.x -= 6
+                    self.playerList[1].rect.x += 6
                 elif self.playerList[0].movingRight or self.playerList[1].movingLeft:
                     self.playerList[0].rect.x -= 3
                     self.playerList[1].rect.x += 3
@@ -247,15 +258,6 @@ class Page_Game:
         if c1:
             self.floorList[1].move *= -1
             self.floorList[2].move *= -1
-
-    def initFloorMove(self):    # 依難度決定地板的移動方向
-        if self.dbIndex == 1:
-            m = random.choice([1, -1])
-            for floor in self.floorList:
-                floor.move = m
-        elif self.dbIndex == 2:
-            for floor in self.floorList:
-                floor.move = random.choice([1, -1])
 
     def gameOver(self):         # 遊戲結束
         if self.isOver == -1:
